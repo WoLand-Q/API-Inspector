@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>iikoServer · Инспектор API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Базовые стили проекта -->
+    <link rel="stylesheet" href="../assets/app.css">
+    <!-- Стили именно этой страницы -->
+    <link rel="stylesheet" href="../assets/server.css">
+</head>
+<body class="sv-body">
+
+<header class="sv-header" role="banner">
+    <div class="sv-header__left">
+        <h1 class="sv-title">iikoServer · Инспектор API</h1>
+        <span class="sv-chip">RMS Server</span>
+    </div>
+    <nav class="sv-header__right" aria-label="Навигация">
+        <a class="sv-btn sv-btn--ghost" href="/public/index.php">⟵ Назад в приложение</a>
+    </nav>
+</header>
+
+<!-- Будущее меню (субнавигация) -->
+<nav class="sv-subnav" aria-label="Разделы">
+    <a href="#accounts" aria-current="true">Аккаунты</a>
+    <a href="#runner">Раннер</a>
+    <a href="#logs">Логи (позже)</a>
+    <a href="#charts">Тех. карты (позже)</a>
+    <a href="#scales">Шкалы (позже)</a>
+    <a href="#images">Изображения (позже)</a>
+</nav>
+
+<main class="sv-grid" role="main">
+    <!-- ЛЕВАЯ КОЛОНКА: аккаунты сервера и авторизация -->
+    <aside class="sv-panel" id="accounts" aria-labelledby="sv-accounts-title">
+        <div class="sv-panel__head">
+            <h2 id="sv-accounts-title" class="sv-h2">Аккаунты сервера</h2>
+            <span class="sv-hint">таблицы: <code class="sv-code">accounts_server</code>, <code class="sv-code">server_tokens</code></span>
+        </div>
+
+        <!-- Форма создания/редактирования -->
+        <form class="sv-form" id="form-server-account" autocomplete="off">
+            <div class="sv-grid-2">
+                <label class="sv-field">
+                    <span class="sv-label">Метка (label)</span>
+                    <input class="sv-input" type="text" name="label" placeholder="prod-node-1" required />
+                </label>
+                <label class="sv-field">
+                    <span class="sv-label">Базовый URL</span>
+                    <input class="sv-input" type="text" name="base_url" placeholder="https://host:port" required />
+                </label>
+                <label class="sv-field">
+                    <span class="sv-label">Логин</span>
+                    <input class="sv-input" type="text" name="login" placeholder="admin" required />
+                </label>
+                <label class="sv-field">
+                    <span class="sv-label">Пароль (plain)</span>
+                    <input class="sv-input" type="password" name="password_plain" placeholder="••••••••" required />
+                </label>
+            </div>
+
+            <div class="sv-actions" style="margin-top:8px;">
+                <button type="button" class="sv-btn sv-btn--ok" id="btn-acc-add" data-action="server_account_add">Добавить</button>
+                <button type="button" class="sv-btn" id="btn-acc-update" data-action="server_account_update" disabled>Сохранить</button>
+                <button type="button" class="sv-btn sv-btn--danger" id="btn-acc-delete" data-action="server_account_delete" disabled>Удалить</button>
+                <div class="sv-actions__meta sv-muted">ID редактируемого: <span id="edit-id" class="sv-pill">—</span></div>
+            </div>
+        </form>
+
+        <div class="sv-divider" role="separator"></div>
+
+        <!-- Выбор и токен -->
+        <section class="sv-block">
+            <div class="sv-row sv-row--wrap">
+                <span class="sv-tag">выбранный сервер</span>
+                <span id="selected-server" class="sv-badge">—</span>
+                <div class="sv-spacer"></div>
+                <button type="button" class="sv-btn" id="btn-login" data-action="server_login" disabled>Войти</button>
+                <button type="button" class="sv-btn sv-btn--danger" id="btn-logout" data-action="server_logout" disabled>Выйти</button>
+            </div>
+
+            <details class="sv-details" style="margin-top:10px;">
+                <summary>Состояние токена</summary>
+                <div id="token-state" class="sv-token">—</div>
+            </details>
+        </section>
+
+        <div class="sv-divider" role="separator"></div>
+
+        <!-- Таблица аккаунтов -->
+        <section aria-labelledby="tbl-accounts-caption">
+            <h3 class="sv-h3">Список аккаунтов</h3>
+            <div class="sv-tablewrap">
+                <table class="sv-table" id="tbl-accounts" aria-describedby="tbl-accounts-caption">
+                    <caption id="tbl-accounts-caption" class="sv-sr">Аккаунты iikoServer</caption>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Метка</th>
+                        <th>URL</th>
+                        <th>Логин</th>
+                        <th class="sv-col-actions">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
+    </aside>
+
+    <!-- ПРАВАЯ КОЛОНКА: раннер эндпоинтов -->
+    <section class="sv-panel" id="runner" aria-labelledby="sv-runner-title">
+        <div class="sv-panel__head">
+            <h2 id="sv-runner-title" class="sv-h2">Раннер запросов</h2>
+            <div class="sv-row">
+                <button type="button" class="sv-btn sv-btn--ghost" id="btn-copy-curl" title="Скопировать cURL">⧉ cURL</button>
+            </div>
+        </div>
+
+        <!-- Параметры выполнения -->
+        <form class="sv-form" id="form-runner" autocomplete="off">
+            <div class="sv-grid-2">
+                <label class="sv-field">
+                    <span class="sv-label">Метод (action)</span>
+                    <select class="sv-select" id="method-select" name="action" required>
+                        <optgroup label="Аутентификация">
+                            <option value="server_login">server_login</option>
+                            <option value="server_logout">server_logout</option>
+                        </optgroup>
+
+                        <optgroup label="Номенклатура · Элементы">
+                            <option value="server_products_list_get">server_products_list_get</option>
+                            <option value="server_products_list_post">server_products_list_post</option>
+                            <option value="server_product_save">server_product_save</option>
+                            <option value="server_product_update">server_product_update</option>
+                            <option value="server_products_delete">server_products_delete</option>
+                            <option value="server_products_restore">server_products_restore</option>
+                        </optgroup>
+
+                        <optgroup label="Номенклатура · Группы">
+                            <option value="server_groups_list_get">server_groups_list_get</option>
+                            <option value="server_groups_list_post">server_groups_list_post</option>
+                            <option value="server_group_save">server_group_save</option>
+                            <option value="server_group_update">server_group_update</option>
+                            <option value="server_groups_delete">server_groups_delete</option>
+                            <option value="server_groups_restore">server_groups_restore</option>
+                        </optgroup>
+
+                        <optgroup label="Пользовательские категории">
+                            <option value="server_categories_list_get">server_categories_list_get</option>
+                            <option value="server_categories_list_post">server_categories_list_post</option>
+                            <option value="server_category_save">server_category_save</option>
+                            <option value="server_category_update">server_category_update</option>
+                            <option value="server_category_delete">server_category_delete</option>
+                            <option value="server_category_restore">server_category_restore</option>
+                        </optgroup>
+
+                        <optgroup label="Изображения">
+                            <option value="server_image_load">server_image_load</option>
+                            <option value="server_image_save_base64">server_image_save_base64</option>
+                            <option value="server_images_delete">server_images_delete</option>
+                        </optgroup>
+
+                        <optgroup label="Технологические карты">
+                            <option value="server_charts_get_all">server_charts_get_all</option>
+                            <option value="server_charts_get_all_update">server_charts_get_all_update</option>
+                            <option value="server_charts_get_tree">server_charts_get_tree</option>
+                            <option value="server_charts_get_assembled">server_charts_get_assembled</option>
+                            <option value="server_charts_get_prepared">server_charts_get_prepared</option>
+                            <option value="server_chart_by_id">server_chart_by_id</option>
+                            <option value="server_charts_get_history">server_charts_get_history</option>
+                            <option value="server_chart_save">server_chart_save</option>
+                            <option value="server_chart_delete">server_chart_delete</option>
+                        </optgroup>
+
+                        <optgroup label="Шкалы и размеры">
+                            <option value="server_scales_list_get">server_scales_list_get</option>
+                            <option value="server_scales_list_post">server_scales_list_post</option>
+                            <option value="server_scale_by_id">server_scale_by_id</option>
+                            <option value="server_scales_save">server_scales_save</option>
+                            <option value="server_scales_update">server_scales_update</option>
+                            <option value="server_scales_delete">server_scales_delete</option>
+                            <option value="server_scales_restore">server_scales_restore</option>
+                            <option value="server_product_scale_get">server_product_scale_get</option>
+                            <option value="server_products_scales_get">server_products_scales_get</option>
+                            <option value="server_products_scales_post">server_products_scales_post</option>
+                            <option value="server_product_scale_set">server_product_scale_set</option>
+                            <option value="server_product_scale_delete">server_product_scale_delete</option>
+                        </optgroup>
+                    </select>
+                    <small id="method-desc" class="sv-muted">Выбери action, затем добавь <code class="sv-code">server_id</code> и payload ниже.</small>
+                </label>
+
+                <label class="sv-field">
+                    <span class="sv-label">Быстрые вставки</span>
+                    <div class="sv-btn-group">
+                        <button type="button" class="sv-btn sv-btn--ghost" data-fill="list_get">Параметры GET</button>
+                        <button type="button" class="sv-btn sv-btn--ghost" data-fill="list_post">Параметры POST</button>
+                        <button type="button" class="sv-btn sv-btn--ghost" data-fill="ids_one">ID один</button>
+                        <button type="button" class="sv-btn sv-btn--ghost" data-fill="ids_many">ID список</button>
+                    </div>
+                </label>
+            </div>
+
+            <div class="sv-grid-2">
+                <label class="sv-field">
+                    <span class="sv-label">Payload JSON</span>
+                    <textarea class="sv-input sv-input--area" id="payload" name="payload" rows="10" placeholder='{"server_id":1, "params":{...} | "form":{...} | "body":{...} | "items":[...]}'></textarea>
+                    <small class="sv-muted">Тело для <code class="sv-code">api.php?action={selected}</code>. Формат зависит от эндпоинта.</small>
+                </label>
+
+                <label class="sv-field">
+                    <span class="sv-label">Подсказка по ключам</span>
+                    <div class="sv-out" id="hint" aria-live="polite">
+                        Выбери метод, ячейка подскажет ожидаемые поля: <span class="sv-code">params / form / body / items / payload</span>.
+                        Для многих вызовов требуется <span class="sv-code">server_id</span>.
+                    </div>
+                    <div class="sv-row sv-row--gap" style="margin-top:8px;">
+                        <button type="button" class="sv-btn sv-btn--ok" id="btn-exec">Выполнить</button>
+                        <button type="reset" class="sv-btn sv-btn--ghost" id="btn-clear">Очистить</button>
+                    </div>
+                </label>
+            </div>
+        </form>
+
+        <div class="sv-divider" role="separator"></div>
+
+        <!-- Ответ -->
+        <section aria-labelledby="sv-output-title">
+            <div class="sv-row">
+                <h3 id="sv-output-title" class="sv-h3">Ответ сервера</h3>
+                <div class="sv-spacer"></div>
+                <button type="button" class="sv-btn" id="btn-copy-out">Скопировать</button>
+                <button type="button" class="sv-btn" id="btn-save-out">Сохранить .json</button>
+            </div>
+            <pre class="sv-out sv-out--mono" id="out" tabindex="0">—</pre>
+        </section>
+    </section>
+</main>
+<script src="../assets/server.js?v=5"></script>
+<script>window.API_URL = '/public/api.server.php';</script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!-- partials/modal_loyalty.html -->
+<div class="modal fade" id="modalLoyalty" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-stars"></i> Лояльность (Syrve)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-lg-4">
+                        <div class="vstack gap-2">
+                            <div class="small text-secondary">Организация</div>
+                            <div class="p-2 rounded" style="background: rgba(255,255,255,.06); border:1px dashed var(--glass-border)">
+                                <div class="small">ID: <code id="loyOrg">—</code></div>
+                                <div class="small">Аккаунт: <code id="loyAcc">—</code></div>
+                            </div>
+
+                            <div class="small text-secondary mt-2">Быстрый выбор</div>
+                            <div id="loyMenu" class="list-group">
+                                <div class="list-group-item list-group-item-action active" data-ep="calculate">🧮 Рассчитать скидки (calculate)</div>
+                                <div class="list-group-item list-group-item-action" data-ep="manual_condition">🧩 Ручное условие</div>
+
+                                <div class="list-group-item list-group-item-action" data-ep="customer_info">👤 Инфо клиента</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_create_or_update">👤 Создать/обновить клиента</div>
+
+                                <div class="list-group-item list-group-item-action" data-ep="customer_wallet_topup">💰 Кошелёк: пополнение</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_wallet_chargeoff">💳 Кошелёк: списание</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_wallet_hold">💳 Кошелёк: холд</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_wallet_cancel_hold">💳 Снять холд</div>
+
+                                <div class="list-group-item list-group-item-action" data-ep="coupons_info">🏷️ Купон: информация</div>
+                                <div class="list-group-item list-group-item-action" data-ep="coupons_series">🏷️ Серии купонов</div>
+                                <div class="list-group-item list-group-item-action" data-ep="coupons_by_series">🏷️ Купоны по серии</div>
+
+                                <div class="list-group-item list-group-item-action" data-ep="customer_transactions_by_date">📑 Транзакции по дате</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_transactions_by_revision">📑 Транзакции по ревизии</div>
+
+                                <div class="list-group-item list-group-item-action" data-ep="program">🎁 Программы лояльности</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_program_add">🎁 Привязать к программе</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_card_add">💳 Привязать карту</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_card_remove">💳 Удалить карту</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_category">🏷 Категории клиента</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_category_add">🏷 Добавить категорию</div>
+                                <div class="list-group-item list-group-item-action" data-ep="customer_category_remove">🏷 Удалить категорию</div>
+                                <div class="list-group-item list-group-item-action" data-ep="get_counters">🔢 Счётчики клиента</div>
+
+                                <div class="list-group-item list-group-item-action" data-ep="message_send_sms">✉️ Отправить SMS</div>
+                                <div class="list-group-item list-group-item-action" data-ep="message_send_email">✉️ Отправить Email</div>
+                                <div class="list-group-item list-group-item-action" data-ep="check_sms_sending_possibility">✉️ Проверить возможность SMS</div>
+                                <div class="list-group-item list-group-item-action" data-ep="check_sms_status">✉️ Статус SMS</div>
+                            </div>
+
+                            <div class="small text-secondary mt-2">Подсказки</div>
+                            <div id="loyNotes" class="small text-secondary"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Телефон клиента</label>
+                                <input id="loyPhone" class="form-control" placeholder="+7XXXXXXXXXX">
+                                <div class="form-text">Можно пустым — если знаешь <code>customerId</code> и используешь авто-резолвинг на сервере.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Client ID / Card / Coupon</label>
+                                <input id="loyId" class="form-control" placeholder="customerId / cardNumber / coupon">
+                            </div>
+
+                            <!-- === CALCULATE SECTION === -->
+                            <div class="col-12" id="calcSection">
+                                <div class="card border-secondary">
+                                    <div class="card-header d-flex align-items-center justify-content-between">
+                                        <span><i class="bi bi-truck"></i> Доставка (эмуляция заказа для расчёта)</span>
+                                        <span class="small text-muted">не создаёт заказ — только расчёт промо/скидок</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-2">
+                                            <div class="col-md-3">
+                                                <label class="form-label">External №</label>
+                                                <div class="input-group">
+                                                    <input id="calcExtNum" class="form-control form-control-sm" placeholder="SC-..." />
+                                                    <button id="calcExtGen" class="btn btn-outline-secondary btn-sm" type="button">сген.</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">ETA, мин</label>
+                                                <div class="input-group">
+                                                    <input id="calcEta" type="number" min="0" step="5" class="form-control form-control-sm" value="45">
+                                                    <button id="calcEtaNow" class="btn btn-outline-secondary btn-sm" type="button">0</button>
+                                                </div>
+                                                <div class="form-text">completeBefore: <code id="calcEtaPreview"></code></div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Телефон заказа</label>
+                                                <input id="calcOrderPhone" class="form-control form-control-sm" placeholder="+7..." />
+                                                <div class="form-text">order.phone (для доставки)</div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Доб. номер</label>
+                                                <input id="calcOrderPhoneExt" class="form-control form-control-sm" placeholder="">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">OrderTypeId</label>
+                                                <input id="calcOrderTypeId" class="form-control form-control-sm" placeholder="GUID"/>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label class="form-label">Тип обслуживания</label>
+                                                <select id="calcServiceType" class="form-select form-select-sm">
+                                                    <option value="">— не указывать —</option>
+                                                    <option value="DeliveryByCourier" selected>DeliveryByCourier</option>
+                                                    <option value="DeliveryPickup">DeliveryPickup</option>
+                                                    <option value="EatIn">EatIn</option>
+                                                    <option value="TakeAway">TakeAway</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label class="form-label">Комментарий к заказу</label>
+                                                <input id="calcOrderComment" class="form-control form-control-sm" placeholder="комментарий оператора">
+                                            </div>
+
+                                            <div class="col-12"><hr class="my-2"></div>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label">Адрес доставки (свободный текст)</label>
+                                                <input id="calcAddrText" class="form-control form-control-sm" placeholder="улица, дом, кв...">
+                                                <div class="row g-2 mt-1">
+                                                    <div class="col-5"><input id="calcLat" class="form-control form-control-sm" placeholder="latitude"></div>
+                                                    <div class="col-5"><input id="calcLon" class="form-control form-control-sm" placeholder="longitude"></div>
+                                                    <div class="col-2 d-grid">
+                                                        <button id="calcUseGeoloc" class="btn btn-outline-secondary btn-sm" type="button" title="Моё местоположение"><i class="bi bi-geo"></i></button>
+                                                    </div>
+                                                </div>
+                                                <div class="row g-2 mt-1">
+                                                    <div class="col-6"><input id="calcAddrExtId" class="form-control form-control-sm" placeholder="externalCartographyId"></div>
+                                                    <div class="col-6"><input id="calcAddrComment" class="form-control form-control-sm" placeholder="комментарий к адресу"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <label class="form-label">Гости</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text input-group-text-sm">count</span>
+                                                    <input id="calcGuestsCount" type="number" min="0" step="1" class="form-control form-control-sm" value="0">
+                                                </div>
+                                                <div class="form-check mt-1">
+                                                    <input class="form-check-input" type="checkbox" id="calcGuestsSplit">
+                                                    <label class="form-check-label small" for="calcGuestsSplit">splitBetweenPersons</label>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <label class="form-label">Customer.type</label>
+                                                    <input id="calcOrderCustomerType" class="form-control form-control-sm" placeholder="например: VIP">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <label class="form-label">Маркетинг/Оператор</label>
+                                                <input id="calcMarketingSourceId" class="form-control form-control-sm mb-1" placeholder="marketingSourceId (GUID)">
+                                                <input id="calcOperatorId"         class="form-control form-control-sm mb-1" placeholder="operatorId (GUID)">
+                                                <div class="row g-2">
+                                                    <div class="col-6">
+                                                        <input id="calcDeliveryDuration" type="number" min="0" step="1" class="form-control form-control-sm" placeholder="duration">
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <input id="calcDeliveryZone" class="form-control form-control-sm" placeholder="deliveryZone">
+                                                    </div>
+                                                </div>
+                                                <input id="calcPriceCategoryId" class="form-control form-control-sm mt-1" placeholder="priceCategoryId (GUID)">
+                                                <input id="calcSourceKey"       class="form-control form-control-sm mt-1" placeholder="sourceKey">
+                                            </div>
+
+                                            <div class="col-12"><hr class="my-2"></div>
+
+                                            <div class="col-md-4">
+                                                <label class="form-label">DiscountsInfo</label>
+                                                <input id="calcDiscountCardTrack" class="form-control form-control-sm mb-1" placeholder="card.track (номер/трек)">
+                                                <input id="calcDiscountsList" class="form-control form-control-sm mb-1" placeholder="discounts[].type (через запятую)">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="calcFixedLoyalty">
+                                                    <label class="form-check-label small" for="calcFixedLoyalty">fixedLoyaltyDiscounts</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">LoyaltyInfo</label>
+                                                <input id="calcCoupon" class="form-control form-control-sm mb-1" placeholder="coupon (внутри order)">
+                                                <input id="calcApplicableManualConditionsList" class="form-control form-control-sm" placeholder="applicableManualConditions (GUID,GUID)">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Чек (chequeAdditionalInfo)</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="calcNeedReceipt">
+                                                    <label class="form-check-label small" for="calcNeedReceipt">needReceipt</label>
+                                                </div>
+                                                <input id="calcReceiptEmail" class="form-control form-control-sm mb-1" placeholder="email">
+                                                <input id="calcReceiptPlace" class="form-control form-control-sm mb-1" placeholder="settlementPlace">
+                                                <input id="calcReceiptPhone" class="form-control form-control-sm" placeholder="phone">
+                                            </div>
+
+                                            <div class="col-12"><hr class="my-2"></div>
+
+                                            <!-- Order items builder -->
+                                            <div class="col-12" id="orderBuilderWrap">
+                                                <div class="card bg-transparent border-secondary-subtle">
+                                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                                        <span>Позиции заказа (order.items)</span>
+                                                        <div class="btn-group">
+                                                            <button class="btn btn-outline-secondary btn-sm" id="obImportCart"><i class="bi bi-basket2"></i> Импорт из корзины</button>
+                                                            <button class="btn btn-outline-secondary btn-sm" id="obAddRow"><i class="bi bi-plus-lg"></i> Добавить</button>
+                                                            <button class="btn btn-outline-secondary btn-sm" id="obClear"><i class="bi bi-trash"></i> Очистить</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body p-2">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm align-middle mb-2" id="obTable">
+                                                                <thead>
+                                                                <tr class="text-secondary">
+                                                                    <th style="width:32%">productId</th>
+                                                                    <th style="width:16%">amount</th>
+                                                                    <th style="width:16%">price</th>
+                                                                    <th>name (не уходит в API)</th>
+                                                                    <th class="text-end" style="width:40px"></th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="small text-secondary">Если <code>order.id</code> не указан — отправим <code>null</code> (API принимает GUID или null).</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div> <!-- row -->
+                                    </div> <!-- card-body -->
+                                </div> <!-- card -->
+                            </div> <!-- calcSection -->
+
+                            <!-- Payments -->
+                            <div class="col-12" id="paymentsSection">
+                                <div class="card border-secondary">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>Платежи (order.payments)</span>
+                                        <div class="btn-group">
+                                            <button class="btn btn-outline-secondary btn-sm" id="payAddRow"><i class="bi bi-plus-lg"></i> Добавить</button>
+                                            <button class="btn btn-outline-secondary btn-sm" id="payClear"><i class="bi bi-trash"></i> Очистить</button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm align-middle mb-0" id="payTable">
+                                                <thead>
+                                                <tr class="text-secondary">
+                                                    <th>paymentTypeKind</th>
+                                                    <th>paymentTypeId</th>
+                                                    <th>sum</th>
+                                                    <th>flags</th>
+                                                    <th class="text-end" style="width:40px"></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tips -->
+                            <div class="col-12" id="tipsSection">
+                                <div class="card border-secondary">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>Чаевые (order.tips)</span>
+                                        <div class="btn-group">
+                                            <button class="btn btn-outline-secondary btn-sm" id="tipsAddRow"><i class="bi bi-plus-lg"></i> Добавить</button>
+                                            <button class="btn btn-outline-secondary btn-sm" id="tipsClear"><i class="bi bi-trash"></i> Очистить</button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm align-middle mb-0" id="tipsTable">
+                                                <thead>
+                                                <tr class="text-secondary">
+                                                    <th>paymentTypeKind</th>
+                                                    <th>tipsTypeId</th>
+                                                    <th>paymentTypeId</th>
+                                                    <th>sum</th>
+                                                    <th>flags</th>
+                                                    <th class="text-end" style="width:40px"></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- External Data -->
+                            <div class="col-12" id="extDataSection">
+                                <div class="card border-secondary">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>Внешние данные (order.externalData)</span>
+                                        <div class="btn-group">
+                                            <button class="btn btn-outline-secondary btn-sm" id="extAddRow"><i class="bi bi-plus-lg"></i> Добавить</button>
+                                            <button class="btn btn-outline-secondary btn-sm" id="extClear"><i class="bi bi-trash"></i> Очистить</button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm align-middle mb-0" id="extDataTable">
+                                                <thead>
+                                                <tr class="text-secondary">
+                                                    <th>key</th>
+                                                    <th>value</th>
+                                                    <th class="text-center">isPublic</th>
+                                                    <th class="text-end" style="width:40px"></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Root-level calculate enrichments -->
+                            <div class="col-12">
+                                <div class="card border-secondary">
+                                    <div class="card-header">Параметры на корне (calculate)</div>
+                                    <div class="card-body">
+                                        <div class="row g-2">
+                                            <div class="col-md-4">
+                                                <label class="form-label">coupon (root)</label>
+                                                <input id="calcRootCoupon" class="form-control form-control-sm" placeholder="общий купон на корне">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">referrerId</label>
+                                                <input id="calcReferrerId" class="form-control form-control-sm" placeholder="GUID">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">terminalGroupId</label>
+                                                <input id="calcTerminalGroupId" class="form-control form-control-sm" placeholder="GUID">
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="form-label">availablePaymentMarketingCampaignIds</label>
+                                                <input id="calcAvailPayMcIds" class="form-control form-control-sm" placeholder="GUID, GUID">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">applicableManualConditions (root)</label>
+                                                <input id="calcRootApplicableManualConditions" class="form-control form-control-sm" placeholder="GUID, GUID">
+                                            </div>
+
+                                            <div class="col-md-8">
+                                                <label class="form-label">dynamicDiscounts (по строкам: <code>manualConditionId,sum</code>)</label>
+                                                <textarea id="calcDynamicDiscounts" rows="3" class="form-control form-control-sm" placeholder="a998fc1e-... , 50&#10;..."></textarea>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check mt-4">
+                                                    <input class="form-check-input" type="checkbox" id="calcTrace">
+                                                    <label class="form-check-label" for="calcTrace">isLoyaltyTraceEnabled</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- JSON payload + actions -->
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label mb-0">Payload (JSON)</label>
+                                    <div class="btn-group">
+                                        <button class="btn btn-outline-secondary btn-sm" id="loyTpl">Шаблоны</button>
+                                        <button class="btn btn-outline-secondary btn-sm" id="loyCopy">Копировать</button>
+                                        <button class="btn btn-outline-secondary btn-sm" id="loySave">Сохранить JSON</button>
+                                    </div>
+                                </div>
+                                <textarea id="loyPayload" class="form-control" rows="12" style="font-family: ui-monospace, monospace;"></textarea>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-between align-items-center">
+                                <div class="small text-secondary" id="loyMeta"></div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="loyAutoResolve" checked>
+                                        <label class="form-check-label small" for="loyAutoResolve">Авто customerId</label>
+                                    </div>
+                                    <button class="btn btn-primary" id="loySend"><i class="bi bi-rocket-takeoff"></i> Отправить</button>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <pre class="code small"><code id="loyResult" class="language-json"></code></pre>
+                            </div>
+
+                        </div> <!-- row -->
+                    </div> <!-- col-lg-8 -->
+
+                </div> <!-- row -->
+            </div> <!-- modal-body -->
+        </div>
+    </div>
+</div>

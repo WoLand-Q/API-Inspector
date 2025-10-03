@@ -1,0 +1,102 @@
+<!-- Employees modal -->
+<div class="modal fade" id="modalEmployees" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-people"></i> Сотрудники / Курьеры (Employees)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row g-3">
+                    <!-- Левое меню: список эндпойнтов -->
+                    <div class="col-md-4 col-lg-3">
+                        <div class="list-group" id="empMenu">
+                            <div class="list-group-item active" data-ep="couriers">Курьеры (список)</div>
+                            <div class="list-group-item" data-ep="couriers_by_role">Курьеры по роли</div>
+                            <div class="list-group-item" data-ep="couriers_locations_by_time_offset">Локации за N минут</div>
+                            <div class="list-group-item" data-ep="couriers_active_location">Активная локация курьера</div>
+                            <div class="list-group-item" data-ep="couriers_active_location_by_terminal">Активные локации по терминалу</div>
+                            <div class="list-group-item" data-ep="info">Инфо по сотрудникам</div>
+                            <div class="list-group-item" data-ep="shift_is_open">Смена открыта?</div>
+                            <div class="list-group-item" data-ep="shift_clockin">Открыть смену (clockin)</div>
+                            <div class="list-group-item" data-ep="shift_clockout">Закрыть смену (clockout)</div>
+                            <div class="list-group-item" data-ep="shifts_by_courier">Смены курьера по периоду</div>
+                        </div>
+
+                        <div class="small text-secondary mt-3">
+                            Используются выбранные <strong>аккаунт</strong> и <strong>точка</strong> из главной панели.
+                        </div>
+
+                        <!-- Быстрые поля + лукапы -->
+                        <div class="mt-3 vstack gap-2">
+                            <select class="form-select form-select-sm" id="empCourierSel">
+                                <option value="">— выберите курьера —</option>
+                            </select>
+                            <select class="form-select form-select-sm" id="empTerminalSel">
+                                <option value="">— терминальная группа —</option>
+                            </select>
+
+                            <input class="form-control form-control-sm" id="empEmployeeId" placeholder="employeeId (GUID)">
+                            <input class="form-control form-control-sm" id="empCourierId" placeholder="courierId (GUID)">
+                            <input class="form-control form-control-sm" id="empTerminalGroupId" placeholder="terminalGroupId (GUID)">
+
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">Минут</span>
+                                <input type="number" class="form-control" id="empMinutes" value="30" min="1">
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-secondary btn-sm flex-fill" id="empLookupRefresh">
+                                    Обновить курьеров/терминалы
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" id="empFillNow">сегодня 00:00 → сейчас</button>
+                            </div>
+
+                            <div class="small">Период:</div>
+                            <input type="datetime-local" class="form-control form-control-sm" id="empFrom">
+                            <input type="datetime-local" class="form-control form-control-sm" id="empTo">
+                        </div>
+
+                    </div>
+
+                    <!-- Правая часть: подсказки + payload + ответ -->
+                    <div class="col-md-8 col-lg-9">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="small text-secondary">Орг: <code id="empOrg"></code></div>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-secondary btn-sm" id="empCopy"><i class="bi bi-clipboard"></i></button>
+                                <button class="btn btn-primary btn-sm" id="empSend"><i class="bi bi-send"></i> Отправить</button>
+                            </div>
+                        </div>
+
+                        <div id="empNotes" class="alert alert-secondary small"></div>
+
+                        <label class="form-label small">Payload (редактируйте при необходимости)</label>
+                        <textarea id="empPayload" class="form-control" rows="10" spellcheck="false"></textarea>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 mb-1">
+                            <div class="small text-secondary">Ответ</div>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-secondary btn-sm" id="empSaveJson"><i class="bi bi-filetype-json"></i></button>
+                            </div>
+                        </div>
+                        <pre class="code small"><code id="empResult" class="language-json"></code></pre>
+
+                        <div class="mt-3 small">
+                            <strong>Шпаргалка потоков:</strong>
+                            <ol class="mb-0">
+                                <li>Получить курьеров: «Курьеры» или «Курьеры по роли» → взять <code>courierId</code>/<code>employeeId</code>.</li>
+                                <li>Проверить смену: «Смена открыта?» → при необходимости «Открыть смену»/«Закрыть смену».</li>
+                                <li>Локации: разово по курьеру («Активная локация курьера»), массово по терминалу («…by_terminal»), или «за N минут».</li>
+                                <li>История смен: «Смены курьера по периоду».</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

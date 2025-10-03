@@ -1,0 +1,137 @@
+:root{
+  --glass: rgba(255,255,255,.05);
+  --glass-border: rgba(255,255,255,.08);
+}
+
+body{
+  background:
+          radial-gradient(1200px 600px at 10% -10%, rgba(56,189,248,.10), transparent),
+          radial-gradient(900px 500px at 110% 10%, rgba(170,102,204,.10), transparent),
+          #0b0d10;
+}
+
+/* базовая "стеклянная" панель */
+.panel.glass{
+  position: relative;
+  backdrop-filter: saturate(160%) blur(8px);
+  -webkit-backdrop-filter: saturate(160%) blur(8px);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+/* лог-лента */
+.logs-list{ max-height: 340px; overflow: auto; padding-right: 4px; }
+.logs-list .item{ border-bottom: 1px dashed var(--glass-border); padding: .5rem 0; }
+.logs-list .item:last-child{ border-bottom: 0 }
+
+/* код */
+.glass .code{
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.glass pre.code{
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+/* карточки меню */
+.card-menu{
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass);
+  overflow: hidden;
+  transition: transform .12s ease, box-shadow .12s ease;
+  will-change: transform;
+}
+.card-menu:hover{ transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,.25); }
+.card-menu .thumb{
+  width:100%; aspect-ratio: 4/3; object-fit: cover; display:block; background:#14181d;
+  opacity:0; transition: opacity .3s ease;
+}
+.card-menu .thumb.loaded{ opacity:1; }
+.card-menu .title{
+  font-weight:600;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.card-menu .desc{
+  color:#9aa4b2; font-size:.9rem;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+}
+
+/* категории (левая липкая панель) */
+.cats{ max-height: 70vh; overflow: auto; }
+.cats .cat{
+  display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+  border:1px dashed var(--glass-border); border-radius: 999px; padding:.35rem .65rem; cursor:pointer;
+}
+.cats .cat.active{ background: rgba(56,189,248,.12); border-style: solid; }
+
+/* Липкая панель — ПОД модалками, НО над карточками */
+.sticky-cats{
+  z-index: 1020;            /* = bootstrap .sticky-top; модалка выше (1055) */
+  isolation: isolate;       /* отсечь чужие тени */
+  overflow: hidden;         /* убрать «грязь» от теней под ней */
+  backdrop-filter: saturate(160%) blur(8px);
+  -webkit-backdrop-filter: saturate(160%) blur(8px);
+}
+
+/* помощники */
+.qr{ background:#fff; padding:8px; border-radius:12px }
+.object-cover{ object-fit:cover }
+
+/* skeleton */
+.skel{
+  background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.12),rgba(255,255,255,.06));
+  background-size:200% 100%;
+  animation:sh 1.2s infinite;
+  border-radius:12px;
+}
+@keyframes sh{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* Диагностика */
+.diag-section .title{ font-weight:600; margin-bottom:.25rem }
+.diag-section .hint{ color:#9aa4b2; font-size:.9rem }
+.diag-table{ width:100%; border-collapse: collapse; }
+.diag-table th,.diag-table td{ border-bottom:1px dashed var(--glass-border); padding:6px 8px; }
+.diag-badge{ display:inline-block; padding:.15rem .5rem; border:1px solid var(--glass-border); border-radius:999px; margin-right:.25rem; }
+
+/* Корзина */
+.cart-toggle{ position: fixed; right:16px; bottom:16px; z-index:1030 }
+.badge-pulse{ position:relative; }
+.badge-pulse::after{
+  content:''; position:absolute; inset:-2px; border-radius:999px;
+  border:2px solid rgba(56,189,248,.6); animation:bp 1.4s infinite;
+}
+@keyframes bp{0%{transform:scale(.9);opacity:.8}70%{transform:scale(1.2);opacity:0}100%{opacity:0}}
+.term-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px }
+.term-online{ background:#22c55e } .term-offline{ background:#ef4444 }
+
+/* Topbar — ниже модалок, но над карточками */
+.topbar{
+  border-bottom: 1px solid var(--glass-border);
+  z-index: 1040;            /* < 1055 (modal), > контента */
+  backdrop-filter: saturate(160%) blur(8px);
+  -webkit-backdrop-filter: saturate(160%) blur(8px);
+  background: rgba(11,13,16,.55);
+}
+.topbar .navbar-brand{ font-size: 1rem; }
+.topbar .dropdown-menu{ min-width: 260px; }
+.topbar .dropdown-item i{ width: 1.2rem; margin-right: .35rem; }
+
+/* На случай сторонних тем — закрепим уровни модалки явно */
+.modal-backdrop{ z-index: 1050; }
+.modal{ z-index: 1055; }
+
+/* адаптив */
+@media (max-width: 991.98px){
+  .logs-list{ max-height: 220px; }
+  .cats{ max-height: 40vh; }
+}
+@media (max-width: 575.98px){
+  .panel.glass { border-radius: 12px; }
+  .card-menu{ border-radius: 12px; }
+  .card-menu .thumb{ aspect-ratio: 16/9; }
+}

@@ -1,0 +1,79 @@
+<!-- 📦 Modal: Addresses & Delivery -->
+<div class="modal fade" id="modalAddresses" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Адреса и ограничения доставки</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-3">
+                        <div class="list-group" id="addrMenu">
+                            <button class="list-group-item list-group-item-action active" data-ep="regions">Регионы</button>
+                            <button class="list-group-item list-group-item-action" data-ep="cities">Города</button>
+                            <button class="list-group-item list-group-item-action" data-ep="streets_by_city">Улицы по городу</button>
+                            <button class="list-group-item list-group-item-action" data-ep="delivery_restrictions">Ограничения доставки</button>
+                            <button class="list-group-item list-group-item-action" data-ep="delivery_restrictions_allowed">Проверка адреса</button>
+                            <button class="list-group-item list-group-item-action" data-ep="marketing_sources">Маркетинговые источники</button>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="small text-muted">Используются выбранные аккаунт и точка из главной панели.</div>
+                            <div class="mt-2">
+                                <label class="form-label small mb-1">Организация</label>
+                                <div id="addrOrg" class="form-control form-control-sm" style="background:#f8f9fa" aria-readonly="true"></div>
+                            </div>
+
+                            <div class="mt-2">
+                                <label class="form-label small mb-1">Город</label>
+                                <select id="addrCitySel" class="form-select form-select-sm">
+                                    <option value="">— не выбрано —</option>
+                                </select>
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label small mb-1">Улица</label>
+                                <select id="addrStreetSel" class="form-select form-select-sm">
+                                    <option value="">— не выбрано —</option>
+                                </select>
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label small mb-1">Дом</label>
+                                <input id="addrHouse" class="form-control form-control-sm" placeholder="напр. 12Б">
+                            </div>
+                            <div class="mt-2 input-group input-group-sm">
+                                <span class="input-group-text">Lat</span>
+                                <input id="addrLat" class="form-control" placeholder="">
+                                <span class="input-group-text">Lon</span>
+                                <input id="addrLon" class="form-control" placeholder="">
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="addrIsCourier" checked>
+                                <label class="form-check-label small" for="addrIsCourier">Курьерская доставка</label>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm mt-2" id="addrLookupRefresh">Обновить справочники</button>
+                        </div>
+                    </div>
+
+                    <div class="col-9">
+                        <div class="mb-2 small" id="addrNotes"></div>
+
+                        <label class="form-label small">Payload (редактируйте при необходимости)</label>
+                        <textarea id="addrPayload" class="form-control" rows="9" spellcheck="false"></textarea>
+
+                        <div class="d-flex gap-2 mt-2">
+                            <button class="btn btn-primary" id="addrSend">Отправить</button>
+                            <button class="btn btn-outline-secondary" id="addrCopy">Скопировать JSON</button>
+                            <button class="btn btn-outline-secondary" id="addrSaveJson">Сохранить ответ</button>
+                        </div>
+
+                        <label class="form-label small mt-3">Ответ</label>
+                        <pre class="bg-dark text-light p-3 rounded" style="min-height:220px"><code id="addrResult" class="language-json"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

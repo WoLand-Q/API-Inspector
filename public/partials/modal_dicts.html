@@ -1,0 +1,58 @@
+<!-- Dictionaries modal -->
+<div class="modal fade" id="modalDicts" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-journal-text"></i> Справочники (Dictionaries)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row g-3">
+                    <!-- left: menu -->
+                    <div class="col-md-4 col-lg-3">
+                        <div class="list-group" id="dictMenu">
+                            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-dict="cancel_causes">
+                                Причины отмены <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-dict="deliveries_order_types">
+                                Типы заказов <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-dict="discounts">
+                                Скидки/доплаты <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-dict="payment_types">
+                                Виды оплаты <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-dict="removal_types">
+                                Типы удаления <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" data-dict="tips_types">
+                                Типы чаевых <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <div class="alert alert-secondary small mt-3">
+                            Используется выбранный <strong>аккаунт</strong> и <strong>точка</strong> из основной панели.
+                        </div>
+                    </div>
+
+                    <!-- right: result -->
+                    <div class="col-md-8 col-lg-9">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="small text-secondary">
+                                <span>Организация:</span> <code id="dictOrg"></code>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-outline-secondary btn-sm" id="btnDictCopy"><i class="bi bi-clipboard"></i> Копировать</button>
+                                <button class="btn btn-outline-secondary btn-sm" id="btnDictJson"><i class="bi bi-filetype-json"></i> JSON</button>
+                            </div>
+                        </div>
+                        <div id="dictInfo" class="small text-secondary mb-2"></div>
+                        <pre class="code small mb-0"><code id="dictResult" class="language-json"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

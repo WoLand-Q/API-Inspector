@@ -1,0 +1,73 @@
+<!-- Reports modal (лениво подгружается) -->
+<div class="modal fade" id="modalReports" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xxl modal-dialog-scrollable">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-clipboard-data"></i> Отчёты: доставка и заказы зала</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- ВАШ прежний repBox, оставлены те же id, чтобы assets/reports.js работал как раньше -->
+                <div id="repBox" class="p-0">
+                    <div class="d-flex flex-wrap gap-2 align-items-end">
+                        <div>
+                            <label class="form-label small">С:</label>
+                            <input id="repFrom" type="datetime-local" class="form-control" style="min-width:220px">
+                        </div>
+                        <div>
+                            <label class="form-label small">По:</label>
+                            <input id="repTo" type="datetime-local" class="form-control" style="min-width:220px">
+                        </div>
+
+                        <div class="vr mx-2 d-none d-md-block"></div>
+
+                        <div>
+                            <label class="form-label small">Секция зала</label>
+                            <select id="repSection" class="form-select" style="min-width:220px"></select>
+                        </div>
+                        <div>
+                            <label class="form-label small">Стол</label>
+                            <select id="repTable" class="form-select" style="min-width:220px"></select>
+                        </div>
+                        <div class="d-flex gap-2 align-items-end">
+                            <button class="btn btn-outline-light" id="btnRepSections"><i class="bi bi-diagram-3"></i> Секции</button>
+                            <button class="btn btn-warning" id="btnRepHall"><i class="bi bi-list-check"></i> Заказы зала</button>
+                            <button class="btn btn-success" id="btnRepDeliveries"><i class="bi bi-truck"></i> Доставки</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-3" id="repSummary"></div>
+
+                    <div class="table-responsive mt-2">
+                        <table class="table table-dark table-hover align-middle" id="repTableOrders">
+                            <thead><tr>
+                                <th>№</th><th>Телефон</th><th>Создан</th><th>Сумма</th><th>Статус</th>
+                            </tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка "Детали заказа", которую использует reports.js -->
+<div class="modal fade" id="modalOrder" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-receipt"></i> Детали заказа</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Общие</h6><dl id="ordGeneral" class="row mb-3"></dl>
+                <h6>Клиент/адрес</h6><dl id="ordClient" class="row mb-3"></dl>
+                <h6>Тайминги</h6><dl id="ordTimes" class="row mb-3"></dl>
+                <h6>Платежи/позиции</h6><dl id="ordFin" class="row"></dl>
+            </div>
+        </div>
+    </div>
+</div>
